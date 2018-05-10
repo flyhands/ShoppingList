@@ -12,11 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class readJson extends AsyncTask<String, String, String> {
+    String line = "";
 
     protected String doInBackground(String... params) {
         HttpURLConnection connection;
         URL url;
         BufferedReader reader = null;
+
+
         final List<String> list = new ArrayList<>();
 
         try {
@@ -25,7 +28,7 @@ public class readJson extends AsyncTask<String, String, String> {
             connection = (HttpURLConnection) url.openConnection();
             connection.connect();
             InputStream stream = connection.getInputStream();
-            String line = "";
+
             StringBuffer buffer = new StringBuffer();
             reader = new BufferedReader(new InputStreamReader(stream));
 
@@ -47,6 +50,10 @@ public class readJson extends AsyncTask<String, String, String> {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public String getData(){
+        return line;
     }
 
 }

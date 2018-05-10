@@ -1,10 +1,7 @@
 package android.vogella.de.shoppinglist;
 
-<<<<<<< HEAD
 import android.content.Intent;
-=======
 import android.database.Cursor;
->>>>>>> 3f8883d7b30f07b2843a4a528d62a6dc41c6498b
 import android.os.Bundle;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
@@ -16,6 +13,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -85,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
             shoppingList.add(data.getString(1));
             adapter = new ArrayAdapter<String>(this,R.layout.checkable_list_layout,R.id.txt_title,shoppingList);
             lvCart.setAdapter(adapter);
-            }
+        }
 
 
 
@@ -94,12 +92,6 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-<<<<<<< HEAD
-                Intent intent = new Intent(getApplicationContext(), JSON.class);
-                startActivity(intent);
-=======
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setTitle("Add Item");
                 final EditText input = new EditText(MainActivity.this);
@@ -127,8 +119,17 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
             builder.show();
->>>>>>> 3f8883d7b30f07b2843a4a528d62a6dc41c6498b
 
+            }
+        });
+
+
+        Button but = findViewById(R.id.read);
+        but.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), JSON.class);
+                startActivity(intent);
             }
         });
     }
