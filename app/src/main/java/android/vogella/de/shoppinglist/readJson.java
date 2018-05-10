@@ -1,57 +1,44 @@
 package android.vogella.de.shoppinglist;
 
-import android.os.AsyncTask;
+import android.os.NetworkOnMainThreadException;
 import android.util.Log;
-
-import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
-public class readJson extends AsyncTask<String, String, String> {
-    String line = "";
-
-    protected String doInBackground(String... params) {
-        HttpURLConnection connection;
-        URL url;
-        BufferedReader reader = null;
-
-
-        final List<String> list = new ArrayList<>();
-
+public class readJson{
+    public String line;
+    public readJson() {
         try {
-
-            url = new URL(params[0]);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.connect();
-            InputStream stream = connection.getInputStream();
-
-            StringBuffer buffer = new StringBuffer();
-            reader = new BufferedReader(new InputStreamReader(stream));
-
-
-
-            while ((line = reader.readLine()) != null) {
-                list.add(line+"\n");
-                line.concat(buffer.toString());
-                Log.d("Response: ", "> " + line);   //here u ll get whole response...... :-)
-            }
-            StringBuilder builder = new StringBuilder();
-            for (String value : list) {
-                builder.append(value);
-            }
-            final String text = builder.toString();
-            Log.v("msg", text);
-
-        } catch (Exception e) {
+            String path ="http://10.0.2.2//syafi/jsonfile.json";
+            URL u = new URL(path);
+            HttpURLConnection c = (HttpURLConnection) u.openConnection();
+            c.setRequestMethod("GET");
+            c.setDoOutput(true);
+            c.connect();
+            InputStream in = c.getInputStream();
+            Log.e("value",in.toString());
+            ByteArrayOutputStream bo = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            in.read(buffer); // Read from Buffer.
+            bo.write(buffer); // Write Into Buffer.
+            bo.close();
+            line = bo.toString();
+        }
+        catch (NetworkOnMainThreadException e) {
+        }
+        catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
     }
-
     public String getData(){
         return line;
     }
