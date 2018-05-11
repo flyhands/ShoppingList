@@ -24,6 +24,7 @@ public class readJson extends AsyncTask<String, String, String> {
 
         try {
 
+
             url = new URL(params[0]);
             connection = (HttpURLConnection) url.openConnection();
             connection.connect();

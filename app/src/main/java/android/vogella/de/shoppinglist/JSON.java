@@ -20,14 +20,14 @@ public class JSON extends AppCompatActivity {
 
 
         tv = findViewById(R.id.textView);
-        String paramValue = "http://10.0.2.2//syafi/jsonfile.json";
+        String paramValue = "http://10.0.2.2/hanif/jsonfile.json";
 
 
 
         readson = (readJson) new readJson().execute(paramValue);
 
         data = readson.doInBackground();
-        Log.v("msg", readson.getData());
+        Log.e("msg", readson.getData());
 
         FloatingActionButton fab = findViewById(R.id.floatingActionButton);
         fab.setOnClickListener(new View.OnClickListener() {

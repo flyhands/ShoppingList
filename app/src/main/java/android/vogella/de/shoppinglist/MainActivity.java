@@ -2,6 +2,8 @@ package android.vogella.de.shoppinglist;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
@@ -31,12 +33,20 @@ import android.content.SharedPreferences;
 import android.app.Activity;
 import android.widget.Toast;
 
+import com.baoyz.swipemenulistview.SwipeMenu;
+import com.baoyz.swipemenulistview.SwipeMenuCreator;
+import com.baoyz.swipemenulistview.SwipeMenuItem;
+import com.baoyz.swipemenulistview.SwipeMenuListView;
+
 public class MainActivity extends AppCompatActivity {
 
     ArrayList<String> shoppingList = null;
     ArrayAdapter<String> adapter = null;
-    ListView lvCart = null;
+//    ListView lvCart = null;
     DatabaseHelper myDB;
+    SwipeMenuListView clv;
+    String name;
+    int itemID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +57,8 @@ public class MainActivity extends AppCompatActivity {
 
         myDB = new DatabaseHelper(this);
 
-        lvCart = (ListView)findViewById(R.id.listView);
+//        lvCart = (ListView)findViewById(R.id.listView);
+        clv = (SwipeMenuListView)findViewById(R.id.swipeListCart);
         shoppingList = new ArrayList<>();
 //        Collections.addAll(shoppingList, "Eggs", "Yogurt", "Milk", "Bananas", "Apples", "Tide with bleach", "Cascade");
 //        shoppingList.addAll(Arrays.asList("Napkins", "Dog food", "Chapstick", "Bread"));
@@ -81,9 +92,75 @@ public class MainActivity extends AppCompatActivity {
 //        }
         while(data.moveToNext()){
             shoppingList.add(data.getString(1));
-            adapter = new ArrayAdapter<String>(this,R.layout.checkable_list_layout,R.id.txt_title,shoppingList);
-            lvCart.setAdapter(adapter);
+//            adapter = new ArrayAdapter<String>(this,R.layout.checkable_list_layout,R.id.txt_title,shoppingList);
+            adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,shoppingList);
+            clv.setAdapter(adapter);
+//            lvCart.setAdapter(adapter);
         }
+
+        SwipeMenuCreator creator = new SwipeMenuCreator() {
+
+            @Override
+            public void create(SwipeMenu menu) {
+                // create "open" item
+//                SwipeMenuItem openItem = new SwipeMenuItem(
+//                        getApplicationContext());
+//                // set item background
+//                openItem.setBackground(new ColorDrawable(Color.rgb(0xC9, 0xC9,
+//                        0xCE)));
+//                // set item width
+//                openItem.setWidth(170);
+//                // set item title
+//                openItem.setTitle("Open");
+//                // set item title fontsize
+//                openItem.setTitleSize(18);
+//                // set item title font color
+//                openItem.setTitleColor(Color.WHITE);
+//                // add to menu
+//                menu.addMenuItem(openItem);
+
+                // create "delete" item
+                SwipeMenuItem deleteItem = new SwipeMenuItem(
+                        getApplicationContext());
+                // set item background
+                deleteItem.setBackground(new ColorDrawable(Color.rgb(0xff,
+                        0xff, 0xff)));
+                // set item width
+                deleteItem.setWidth(170);
+                // set a icon
+                deleteItem.setIcon(R.drawable.ic_action_check);
+                // add to menu
+                menu.addMenuItem(deleteItem);
+            }
+        };
+
+// set creator
+        clv.setMenuCreator(creator);
+
+        clv.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
+                switch (index) {
+                    case 0:
+                        // open
+                        Log.e("msg","Clicked item + index");
+                        name = clv.getItemAtPosition(position).toString();
+                        Cursor item = myDB.getItemID(name);
+                        itemID = -1;
+                        while(item.moveToNext()){
+                            itemID = item.getInt(0);
+                        }
+                        if(itemID > -1){
+                            myDB.deleteData(itemID,name);
+                        }
+                        shoppingList.remove(position);
+                        adapter.notifyDataSetChanged();
+                        break;
+                }
+                // false : close the menu; true : not close the menu
+                return false;
+            }
+        });
 
 
 
@@ -106,8 +183,11 @@ public class MainActivity extends AppCompatActivity {
                     shoppingList.add(preferredCase(name.toString()));
                     Log.e("msg","item added");
 //                    Collections.sort(shoppingList);
-                    lvCart.setAdapter(adapter);
-                    lvCart.invalidateViews();
+
+                    clv.setAdapter(adapter);
+                    clv.invalidateViews();
+//                    lvCart.setAdapter(adapter);
+//                    lvCart.invalidateViews();
                     Log.e("msg","item refreshed");
 
                 }
@@ -139,7 +219,8 @@ public class MainActivity extends AppCompatActivity {
         while(data.moveToNext()){Log.e("msg","there's new item");
             shoppingList.add(data.getString(1));
             adapter = new ArrayAdapter<String>(this,R.layout.checkable_list_layout,R.id.txt_title,shoppingList);
-            lvCart.setAdapter(adapter);
+//            lvCart.setAdapter(adapter);
+            clv.setAdapter(adapter);
         }
     }
 
@@ -163,7 +244,8 @@ public class MainActivity extends AppCompatActivity {
         }
         if (id == R.id.action_sort) {
             Collections.sort(shoppingList);
-            lvCart.setAdapter(adapter);
+//            lvCart.setAdapter(adapter);
+            clv.setAdapter(adapter);
             return true;
         }
 //        if (id == R.id.action_add){
@@ -205,7 +287,8 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     shoppingList.clear();
-                    lvCart.setAdapter(adapter);
+//                    lvCart.setAdapter(adapter);
+                    clv.setAdapter(adapter);
                     myDB.removeAll();
                 }
             });
