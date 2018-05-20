@@ -17,6 +17,11 @@ import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,11 +52,24 @@ public class MainActivity extends AppCompatActivity {
     SwipeMenuListView clv;
     String name;
     int itemID;
+    private SensorManager sm;
+    private float acelVal;
+    private float acelLast;
+    private float shake;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        sm = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
+        sm.registerListener(sensorListener, sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+        shake = 0.00f;
+        acelVal = SensorManager.GRAVITY_EARTH;
+        acelLast = SensorManager.GRAVITY_EARTH;
+
+
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -184,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.e("msg","item added");
 //                    Collections.sort(shoppingList);
 
-                    clv.setAdapter(adapter);
+//                    clv.setAdapter(adapter);
                     clv.invalidateViews();
 //                    lvCart.setAdapter(adapter);
 //                    lvCart.invalidateViews();
@@ -332,4 +350,25 @@ public class MainActivity extends AppCompatActivity {
         Log.e("msg","Builder created");
     }
 
+    private final SensorEventListener sensorListener = new SensorEventListener() {
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            float x = event.values[0];
+            float y = event.values[1];
+            float z = event.values[2];
+            acelLast = acelVal;
+            acelVal = (float) Math.sqrt((double) (x*x + y*y + z*z));
+            float delta = acelVal - acelLast;
+            shake = shake * 0.9f + delta; // perform low-cut filter
+            if (shake >12) {
+                Toast toast =Toast.makeText(getApplicationContext(), "DONT", Toast.LENGTH_LONG);
+                toast.show();
+            }
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+        }
+    };
 }
