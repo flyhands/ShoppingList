@@ -35,7 +35,7 @@ public class JSON extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_json);
-        String paramValue = "http://10.0.2.2//syafi/jsonfile.json";
+        String paramValue = "http://192.168.137.1//syafi/jsonfile.json";
         listView = findViewById(R.id.listView1);
         myDB = new DatabaseHelper(this);
 
