@@ -1,14 +1,14 @@
 package android.vogella.de.shoppinglist;
 
-import android.content.Context;
+
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,27 +23,32 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class JSON extends AppCompatActivity {
+
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class ShoppingList extends Fragment {
+    String paramValue = "http://10.0.2.2//syafi/";
     ListView listView;
     DatabaseHelper myDB;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_json);
-        String paramValue = "http://192.168.137.1//syafi/jsonfile.json";
-        listView = findViewById(R.id.listView1);
-        myDB = new DatabaseHelper(this);
+    public ShoppingList() {
+        // Required empty public constructor
+    }
 
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this
+        View v = inflater.inflate(R.layout.fragment_shopping_list, container, false);
+        myDB = new DatabaseHelper(getContext());
 
         JsonTask task = new JsonTask();
-        task.execute(paramValue);
-
-
+        task.execute(paramValue+"jsonfile.json");
+        return v;
     }
 
     class JsonTask extends AsyncTask<String, Void, String> {
@@ -79,7 +84,7 @@ public class JSON extends AppCompatActivity {
                 }
             }
             catch (IOException e) {
-                Toast.makeText(getApplicationContext(),"Error..." + e.toString(),
+                Toast.makeText(getContext(),"Error..." + e.toString(),
                         Toast.LENGTH_LONG).show();
             }
             return answer;
@@ -100,16 +105,16 @@ public class JSON extends AppCompatActivity {
                     String price = jsonChildNode.optString("price");
                     String image = jsonChildNode.optString("image");
 
-                    shoppingList.add(new Item(item, price, image));
+                    shoppingList.add(new Item(item, price, paramValue+image));
 
 
 
                 }
             } catch (JSONException e) {
-                Toast.makeText(getApplicationContext(), "Error" + e.toString(),
+                Toast.makeText(getContext(), "Error" + e.toString(),
                         Toast.LENGTH_SHORT).show();
             }
-            CardAdapter adapter = new CardAdapter(getApplicationContext(), shoppingList);
+            CardAdapter adapter = new CardAdapter(getContext(), shoppingList);
             listView.setAdapter(adapter);
 
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -127,11 +132,12 @@ public class JSON extends AppCompatActivity {
     public void addItem(String name){
         boolean isInserted = myDB.insertData(name);
         if(isInserted == true){
-            Toast.makeText(this,"Item added", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(),"Item added", Toast.LENGTH_LONG).show();
         }
         else
-            Toast.makeText(this,"Item not added", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(),"Item not added", Toast.LENGTH_LONG).show();
 
 
     }
+
 }
