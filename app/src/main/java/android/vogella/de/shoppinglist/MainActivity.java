@@ -70,8 +70,8 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
 
         myDB = new DatabaseHelper(this);
 
@@ -196,16 +196,11 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(DialogInterface dialog, int which) {
                     String name = input.getText().toString();
                     addItem(name);
-//                    displayData();
-//                    shoppingList.add(preferredCase(input.getText().toString()));
                     shoppingList.add(preferredCase(name.toString()));
                     Log.e("msg","item added");
-//                    Collections.sort(shoppingList);
-
-//                    clv.setAdapter(adapter);
+                    adapter = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_list_item_1,shoppingList);
+                    clv.setAdapter(adapter);
                     clv.invalidateViews();
-//                    lvCart.setAdapter(adapter);
-//                    lvCart.invalidateViews();
                     Log.e("msg","item refreshed");
 
                 }
@@ -230,6 +225,16 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+    private void addNewItem(String name){
+//        String x = input.getText().toString();
+        addItem(name);
+        shoppingList.add(preferredCase(name.toString()));
+        Log.e("msg","item added");
+        adapter = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_list_item_1,shoppingList);
+        clv.setAdapter(adapter);
+        clv.invalidateViews();
+        Log.e("msg","item refreshed");
     }
 
     private void displayData(){
@@ -305,7 +310,6 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     shoppingList.clear();
-//                    lvCart.setAdapter(adapter);
                     clv.setAdapter(adapter);
                     myDB.removeAll();
                 }
@@ -360,8 +364,12 @@ public class MainActivity extends AppCompatActivity {
             acelVal = (float) Math.sqrt((double) (x*x + y*y + z*z));
             float delta = acelVal - acelLast;
             shake = shake * 0.9f + delta; // perform low-cut filter
-            if (shake >12) {
-                Toast toast =Toast.makeText(getApplicationContext(), "DONT", Toast.LENGTH_LONG);
+            if (shake >30 && shoppingList!=null) {
+                shoppingList.clear();
+                adapter = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_list_item_1,shoppingList);
+                clv.setAdapter(adapter);
+                myDB.removeAll();
+                Toast toast =Toast.makeText(getApplicationContext(), "List cleared", Toast.LENGTH_LONG);
                 toast.show();
             }
         }
