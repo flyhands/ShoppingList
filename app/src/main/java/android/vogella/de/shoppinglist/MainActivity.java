@@ -217,14 +217,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        Button but = findViewById(R.id.read);
-        but.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), JSON.class);
-                startActivity(intent);
-            }
-        });
     }
     private void addNewItem(String name){
 //        String x = input.getText().toString();
