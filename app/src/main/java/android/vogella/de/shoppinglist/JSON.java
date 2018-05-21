@@ -29,6 +29,7 @@ import java.util.Map;
 
 public class JSON extends AppCompatActivity {
     ListView listView;
+    DatabaseHelper myDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +37,7 @@ public class JSON extends AppCompatActivity {
         setContentView(R.layout.activity_json);
         String paramValue = "http://10.0.2.2//syafi/jsonfile.json";
         listView = findViewById(R.id.listView1);
+        myDB = new DatabaseHelper(this);
 
 
         JsonTask task = new JsonTask();
@@ -113,11 +115,22 @@ public class JSON extends AppCompatActivity {
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                    TextView tv = view.findViewById(R.id.cardTitle);
+                    addItem(tv.getText().toString());
                 }
             });
         }
 
+
+
+    }
+    public void addItem(String name){
+        boolean isInserted = myDB.insertData(name);
+        if(isInserted == true){
+            Toast.makeText(this,"Item added", Toast.LENGTH_LONG).show();
+        }
+        else
+            Toast.makeText(this,"Item not added", Toast.LENGTH_LONG).show();
 
 
     }
