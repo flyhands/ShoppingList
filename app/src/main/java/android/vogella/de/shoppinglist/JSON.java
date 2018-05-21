@@ -5,6 +5,8 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -86,7 +88,7 @@ public class JSON extends AppCompatActivity {
         }
 
         private void ListDrwaer() {
-            List<Map<String, String>> studentList = new ArrayList<Map<String, String>>();
+            List<Item> shoppingList = new ArrayList<>();
             try {
                 JSONObject jsonResponse = new JSONObject(jsonResult);
                 JSONArray jsonMainNode = jsonResponse.optJSONArray("shop_list");
@@ -94,23 +96,29 @@ public class JSON extends AppCompatActivity {
                     JSONObject jsonChildNode = jsonMainNode.getJSONObject(i);
                     String item = jsonChildNode.optString("item");
                     String price = jsonChildNode.optString("price");
-                    String outPut = item + " - " + price;
-                    studentList.add(createStudent("students", outPut));
+                    String image = jsonChildNode.optString("image");
+
+                    shoppingList.add(new Item(item, price, image));
+
+
+
                 }
             } catch (JSONException e) {
                 Toast.makeText(getApplicationContext(), "Error" + e.toString(),
                         Toast.LENGTH_SHORT).show();
             }
-            SimpleAdapter simpleAdapter = new SimpleAdapter(getApplicationContext(), studentList,
-                    android.R.layout.simple_list_item_1, new String[] { "students" }, new int[] { android.R.id.text1 });
-            listView.setAdapter(simpleAdapter);
+            CardAdapter adapter = new CardAdapter(getApplicationContext(), shoppingList);
+            listView.setAdapter(adapter);
+
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                }
+            });
         }
 
-        private HashMap<String, String> createStudent(String name, String number) {
-            HashMap<String, String> studentNameNo = new HashMap<String, String>();
-            studentNameNo.put(name, number);
-            return studentNameNo;
-        }
+
 
     }
 }
