@@ -1,15 +1,25 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="android.vogella.de.shoppinglist.CartFragment">
 
-    <!-- TODO: Update blank fragment layout -->
 
-    <Button
-        android:id="@+id/read"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Button" />
+        <ListView
+            android:id="@+id/swipeListCart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"></ListView>
 
-</FrameLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="28dp"
+        android:layout_marginRight="28dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+</android.support.constraint.ConstraintLayout>

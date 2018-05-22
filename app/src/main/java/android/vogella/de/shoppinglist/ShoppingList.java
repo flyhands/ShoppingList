@@ -4,6 +4,9 @@ package android.vogella.de.shoppinglist;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +48,7 @@ public class ShoppingList extends Fragment {
         // Inflate the layout for this
         View v = inflater.inflate(R.layout.fragment_shopping_list, container, false);
         myDB = new DatabaseHelper(getContext());
+        listView = v.findViewById(R.id.listView1);
 
         JsonTask task = new JsonTask();
         task.execute(paramValue+"jsonfile.json");
@@ -66,6 +70,7 @@ public class ShoppingList extends Fragment {
                 connection.connect();
                 InputStream response = connection.getInputStream();
                 jsonResult = inputStreamToString(response).toString();
+                Log.v("msg", jsonResult.toString());
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -91,10 +96,6 @@ public class ShoppingList extends Fragment {
         }
 
         public void onPostExecute(String results) {
-            ListDrwaer();
-        }
-
-        private void ListDrwaer() {
             List<Item> shoppingList = new ArrayList<>();
             try {
                 JSONObject jsonResponse = new JSONObject(jsonResult);
@@ -124,15 +125,16 @@ public class ShoppingList extends Fragment {
                     addItem(tv.getText().toString());
                 }
             });
+
         }
-
-
-
     }
     public void addItem(String name){
         boolean isInserted = myDB.insertData(name);
         if(isInserted == true){
             Toast.makeText(getContext(),"Item added", Toast.LENGTH_LONG).show();
+            FragmentManager fm = getFragmentManager();
+            CartFragment cf = (CartFragment)fm.findFragmentByTag("android:switcher:2131230774:1");
+            cf.refreshLv();
         }
         else
             Toast.makeText(getContext(),"Item not added", Toast.LENGTH_LONG).show();

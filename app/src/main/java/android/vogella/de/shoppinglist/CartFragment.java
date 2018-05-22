@@ -20,8 +20,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.baoyz.swipemenulistview.SwipeMenu;
@@ -41,7 +43,7 @@ public class CartFragment extends Fragment {
     ArrayList<String> shoppingList = null;
     ArrayAdapter<String> adapter = null;
     DatabaseHelper myDB;
-    SwipeMenuListView clv;
+    ListView clv;
     String name;
     int itemID;
     private SensorManager sm;
@@ -59,6 +61,8 @@ public class CartFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_cart, container,false);
         // Inflate the layout for this fragment
 
+        Log.e("errorroor", getTag().toString());
+
         sm = (SensorManager) getContext().getSystemService(Context.SENSOR_SERVICE);
         sm.registerListener(sensorListener, sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
         shake = 0.00f;
@@ -72,7 +76,7 @@ public class CartFragment extends Fragment {
 
         myDB = new DatabaseHelper(getContext());
 
-        clv = (SwipeMenuListView)view.findViewById(R.id.swipeListCart);
+        clv = (ListView) view.findViewById(R.id.swipeListCart);
         shoppingList = new ArrayList<>();
 
         Cursor data = myDB.getAllData();
@@ -104,42 +108,52 @@ public class CartFragment extends Fragment {
             }
         };
 
-// set creator
-        clv.setMenuCreator(creator);
-
-        clv.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
+        clv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
-                switch (index) {
-                    case 0:
-                        // open
-                        Log.e("msg","Clicked item + index");
-                        name = clv.getItemAtPosition(position).toString();
-                        Cursor item = myDB.getItemID(name);
-                        itemID = -1;
-                        while(item.moveToNext()){
-                            itemID = item.getInt(0);
-                        }
-                        if(itemID > -1){
-                            myDB.deleteData(itemID,name);
-                        }
-                        shoppingList.remove(position);
-                        adapter.notifyDataSetChanged();
-                        break;
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // open
+                Log.e("msg","Clicked item + index");
+                name = clv.getItemAtPosition(position).toString();
+                Cursor item = myDB.getItemID(name);
+                itemID = -1;
+                while(item.moveToNext()){
+                    itemID = item.getInt(0);
                 }
-                // false : close the menu; true : not close the menu
-                return false;
+                if(itemID > -1){
+                    myDB.deleteData(itemID,name);
+                }
+                shoppingList.remove(position);
+                adapter.notifyDataSetChanged();
             }
         });
 
-        Button but = (Button)view.findViewById(R.id.read);
-        but.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), JSON.class);
-                startActivity(intent);
-            }
-        });
+// set creator
+//        clv.setMenuCreator(creator);
+//
+//        clv.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
+//            @Override
+//            public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
+//                switch (index) {
+//                    case 0:
+//                        // open
+//                        Log.e("msg","Clicked item + index");
+//                        name = clv.getItemAtPosition(position).toString();
+//                        Cursor item = myDB.getItemID(name);
+//                        itemID = -1;
+//                        while(item.moveToNext()){
+//                            itemID = item.getInt(0);
+//                        }
+//                        if(itemID > -1){
+//                            myDB.deleteData(itemID,name);
+//                        }
+//                        shoppingList.remove(position);
+//                        adapter.notifyDataSetChanged();
+//                        break;
+//                }
+//                // false : close the menu; true : not close the menu
+//                return false;
+//            }
+//        });
         return view;
     }
 
@@ -218,5 +232,22 @@ public class CartFragment extends Fragment {
 
         }
     };
+
+    public void refreshLv(){
+        Log.v("msg", "Sampai");
+
+        shoppingList = new ArrayList<>();
+
+        Cursor data = myDB.getAllData();
+        Log.e("msg","Data received");
+        shoppingList.clear();
+        while(data.moveToNext()){
+            shoppingList.add(data.getString(1));
+
+        }
+
+        adapter = new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1,shoppingList);
+        clv.setAdapter(adapter);
+    }
 
 }
